@@ -108,9 +108,11 @@ func main() {
 	}
 	configDir := filepath.Dir(ex)
 	configFile := filepath.Join(configDir, "config.yaml")
+	serverBinFile := filepath.Join(configDir, "vscode-server", "bin", "openvscode-server")
 
 	// Setup the config file.
 	viper.SetConfigFile(configFile)
+	viper.SetDefault("vscode.binaryFilePath", serverBinFile)
 
 	// Read the configurations from the specified file.
 	err = viper.ReadInConfig()

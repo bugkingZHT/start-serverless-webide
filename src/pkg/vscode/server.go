@@ -18,15 +18,16 @@ import (
 
 type (
 	Server struct {
-		Host              string // vscode server host
-		Port              string // vscode server port
-		VscodeDataDir     string // vscode server directory to store the user, server and extension data
-		VscodeBinaryDir   string // the directory where vscode binary is
-		WorkspaceDir      string // the workspace directory
-		OssBucketName     string // oss bucket to persist the whole data
-		VscodeDataOssPath string // oss path where store the vscode server data
-		WorkspaceOssPath  string // oss path where store the user workspace data
-		OssClient         *oss.Client
+		Host                 string // vscode server host
+		Port                 string // vscode server port
+		VscodeDataDir        string // vscode server directory to store the user, server and extension data
+		VscodeBinaryDir      string // the directory where vscode binary is
+		VscodeBinaryFilePath string // the path where vscode binary is
+		WorkspaceDir         string // the workspace directory
+		OssBucketName        string // oss bucket to persist the whole data
+		VscodeDataOssPath    string // oss path where store the vscode server data
+		WorkspaceOssPath     string // oss path where store the user workspace data
+		OssClient            *oss.Client
 	}
 	ServerOption func(*Server)
 )
@@ -61,6 +62,7 @@ func NewServer(ctx *context.Context) (*Server, error) {
 	s.WorkspaceDir, _ = homedir.Expand(viper.GetString("workspace.directory"))
 	s.WorkspaceOssPath = viper.GetString("workspace.ossPath")
 	s.OssBucketName = viper.GetString("ossBucketName")
+	s.VscodeBinaryFilePath = viper.GetString("vscode.binaryFilePath")
 
 	// high priority env
 	OssBucketName := os.Getenv("OSS_BUCKET_NAME")
@@ -116,7 +118,8 @@ func (s *Server) init() error {
 	// 	filepath.Join(s.VscodeBinaryDir, "openvscode-server"), s.Host, s.Port, userDataDir, serverDataDir, extensionsDir)
 	// cmd := exec.Command("bash", "-c", cmdStr)
 	cmd := exec.Command(
-		filepath.Join(s.VscodeBinaryDir, "openvscode-server"),
+		//filepath.Join(s.VscodeBinaryDir, "openvscode-server"),
+		s.VscodeBinaryFilePath,
 		"--host="+s.Host, "--port="+s.Port,
 		"--user-data-dir="+userDataDir, "--server-data-dir="+serverDataDir, "--extensions-dir="+extensionsDir,
 		"--without-connection-token", "--start-server", "--telemetry-level=off")
